@@ -29,6 +29,14 @@
         input:checked + .slider:before { transform: translateX(16px); }
         .habit-day { width: 28px; height: 28px; }
         #toast { transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out; }
+        
+        /* Estilos da Barra Lateral Retrátil */
+        #sidebar { transition: width 0.3s ease; }
+        #sidebar.collapsed { width: 80px; }
+        #sidebar.collapsed .sidebar-text { display: none; }
+        #sidebar.collapsed .sidebar-title { justify-content: center; }
+        #sidebar.collapsed #category-list-container h2 { text-align: center; }
+        #main-content { transition: margin-left 0.3s ease; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -47,108 +55,135 @@
     </div>
 
     <!-- Conteúdo Principal do App -->
-    <div id="app-container" class="flex flex-col md:flex-row h-screen">
+    <div id="app-container" class="flex h-screen">
         <!-- Barra Lateral de Navegação e Categorias -->
-        <aside class="w-full md:w-64 bg-white border-r border-gray-200 p-4 flex flex-col">
+        <aside id="sidebar" class="bg-white border-r border-gray-200 p-4 flex flex-col w-64">
+            <div class="flex items-center mb-6 sidebar-title">
+                <i class="fas fa-rocket text-blue-600 text-2xl"></i>
+                <h1 class="text-2xl font-bold text-gray-900 ml-3 sidebar-text">Krominski Hub</h1>
+            </div>
             <div id="main-nav" class="mb-6">
-                 <button id="nav-tasks" class="w-full text-left px-3 py-2 rounded-md font-bold flex items-center space-x-3 transition-colors text-lg"><i class="fas fa-check-double w-6"></i><span>Tarefas</span></button>
-                 <button id="nav-habits" class="w-full text-left px-3 py-2 rounded-md font-bold flex items-center space-x-3 transition-colors text-lg"><i class="fas fa-calendar-check w-6"></i><span>Hábitos</span></button>
-                 <button id="nav-stats" class="w-full text-left px-3 py-2 rounded-md font-bold flex items-center space-x-3 transition-colors text-lg"><i class="fas fa-chart-pie w-6"></i><span>Estatísticas</span></button>
+                 <button id="nav-tasks" class="w-full text-left px-3 py-2 rounded-md font-bold flex items-center space-x-3 transition-colors text-lg"><i class="fas fa-check-double w-6 text-center"></i><span class="sidebar-text">Tarefas</span></button>
+                 <button id="nav-habits" class="w-full text-left px-3 py-2 rounded-md font-bold flex items-center space-x-3 transition-colors text-lg"><i class="fas fa-calendar-check w-6 text-center"></i><span class="sidebar-text">Hábitos</span></button>
+                 <button id="nav-stats" class="w-full text-left px-3 py-2 rounded-md font-bold flex items-center space-x-3 transition-colors text-lg"><i class="fas fa-chart-pie w-6 text-center"></i><span class="sidebar-text">Estatísticas</span></button>
             </div>
             <div id="category-list-container" class="flex-1 overflow-y-auto">
-                <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Áreas</h2>
+                <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2 sidebar-text">Áreas</h2>
                 <div id="category-list" class="space-y-1"></div>
+            </div>
+            <div class="mt-auto pt-4 border-t border-gray-200">
+                <button id="nav-settings" class="w-full text-left px-3 py-2 rounded-md font-bold flex items-center space-x-3 transition-colors text-lg"><i class="fas fa-cog w-6 text-center"></i><span class="sidebar-text">Configurações</span></button>
+                <button id="toggle-sidebar-btn" class="w-full text-left px-3 py-2 rounded-md font-bold flex items-center space-x-3 transition-colors text-lg text-gray-500 hover:bg-gray-100"><i class="fas fa-exchange-alt w-6 text-center"></i><span class="sidebar-text">Recolher</span></button>
             </div>
         </aside>
 
-        <!-- Vista de Tarefas -->
-        <main id="task-view" class="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
-            <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
-                <div>
-                    <h2 id="main-title" class="text-3xl font-bold text-gray-900">Todas as Tarefas</h2>
-                    <p id="current-date" class="text-md text-gray-500"></p>
-                </div>
-                <div class="flex items-center gap-4">
-                    <button id="add-task-btn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
-                        + Adicionar Tarefa
-                    </button>
-                     <div class="relative dropdown">
-                        <button id="user-profile-btn" class="flex items-center gap-2">
-                           <img id="user-photo" src="" alt="Foto do Usuário" class="w-10 h-10 rounded-full">
+        <div id="main-content" class="flex-1 flex flex-col">
+            <!-- Vista de Tarefas -->
+            <main id="task-view" class="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+                <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+                    <div>
+                        <h2 id="main-title" class="text-3xl font-bold text-gray-900">Todas as Tarefas</h2>
+                        <p id="current-date" class="text-md text-gray-500"></p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button id="add-task-btn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+                            + Adicionar Tarefa
                         </button>
-                        <div class="dropdown-content absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-20">
-                            <div class="px-4 py-3 text-sm text-gray-900">
-                                <div>Conectado como</div>
-                                <div id="user-name" class="font-medium truncate"></div>
+                         <div class="relative dropdown">
+                            <button id="user-profile-btn" class="flex items-center gap-2">
+                               <img id="user-photo" src="" alt="Foto do Usuário" class="w-10 h-10 rounded-full">
+                            </button>
+                            <div class="dropdown-content absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-20">
+                                <div class="px-4 py-3 text-sm text-gray-900">
+                                    <div>Conectado como</div>
+                                    <div id="user-name" class="font-medium truncate"></div>
+                                </div>
+                                <div class="border-t border-gray-100"></div>
+                                <a href="#" id="logout-btn" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"><i class="fas fa-sign-out-alt w-6"></i> Sair</a>
                             </div>
-                            <a href="#" id="manage-areas-btn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-sitemap w-6"></i> Gerenciar Áreas</a>
-                            <a href="#" id="backup-btn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-download w-6"></i> Fazer Backup (.xlsx)</a>
-                            <a href="#" id="restore-btn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-upload w-6"></i> Restaurar Backup</a>
-                            <div class="border-t border-gray-100"></div>
-                            <a href="#" id="logout-btn" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"><i class="fas fa-sign-out-alt w-6"></i> Sair</a>
+                        </div>
+                        <input type="file" id="restore-file-input" class="hidden" accept=".xlsx, .xls">
+                    </div>
+                </header>
+                
+                <div id="filter-bar" class="flex flex-wrap items-center gap-4 mb-6 bg-white p-3 rounded-lg shadow-sm">
+                    <select id="filter-importance" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2">
+                        <option value="all">Toda Importância</option>
+                    </select>
+                    <select id="filter-effort" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2">
+                        <option value="all">Todo Esforço</option>
+                    </select>
+                    <select id="filter-date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2">
+                        <option value="all">Qualquer Data</option>
+                        <option value="today">Hoje</option>
+                        <option value="tomorrow">Amanhã</option>
+                        <option value="overdue">Atrasadas</option>
+                        <option value="none">Sem Data</option>
+                    </select>
+                    <div class="flex items-center ml-auto">
+                        <span class="mr-3 text-sm font-medium text-gray-900">Mostrar Concluídas</span>
+                        <label class="switch">
+                            <input type="checkbox" id="filter-completed">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="task-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+            </main>
+
+            <!-- Vista de Hábitos -->
+            <main id="habit-view" class="hidden flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+                <header class="flex justify-between items-center mb-4">
+                    <div class="flex items-center gap-4">
+                        <button id="prev-month-btn" class="p-2 rounded-md hover:bg-gray-200"><i class="fas fa-chevron-left"></i></button>
+                        <h2 id="habit-month-year" class="text-3xl font-bold text-gray-900"></h2>
+                        <button id="next-month-btn" class="p-2 rounded-md hover:bg-gray-200"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <button id="add-habit-btn" class="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition duration-300">+ Adicionar Hábito</button>
+                </header>
+                <div id="habit-tracker" class="bg-white p-4 rounded-lg shadow-sm overflow-x-auto"></div>
+            </main>
+
+            <!-- Vista de Estatísticas -->
+            <main id="stats-view" class="hidden flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Estatísticas</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <h3 class="font-bold mb-4">Tarefas Concluídas por Área</h3>
+                        <canvas id="tasks-by-category-chart"></canvas>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <h3 class="font-bold mb-4">Consistência dos Hábitos (Mês Atual)</h3>
+                        <div id="habits-consistency-chart"></div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Vista de Configurações -->
+            <main id="settings-view" class="hidden flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Configurações</h2>
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="text-xl font-bold mb-4">Áreas</h3>
+                        <p class="text-gray-600 mb-4">Organize as suas áreas de foco. Clique para editar, criar ou apagar.</p>
+                        <button id="manage-areas-btn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700">Gerenciar Áreas</button>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="text-xl font-bold mb-4">Backup & Restauração</h3>
+                        <p class="text-gray-600 mb-4">Guarde uma cópia de segurança dos seus dados ou restaure a partir de um ficheiro.</p>
+                        <div class="flex gap-4">
+                            <button id="backup-btn" class="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-green-700">Fazer Backup (.xlsx)</button>
+                            <button id="restore-btn" class="bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-yellow-600">Restaurar Backup</button>
                         </div>
                     </div>
-                    <input type="file" id="restore-file-input" class="hidden" accept=".xlsx, .xls">
                 </div>
-            </header>
-            
-            <div id="filter-bar" class="flex flex-wrap items-center gap-4 mb-6 bg-white p-3 rounded-lg shadow-sm">
-                <select id="filter-importance" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2">
-                    <option value="all">Toda Importância</option>
-                </select>
-                <select id="filter-effort" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2">
-                    <option value="all">Todo Esforço</option>
-                </select>
-                <select id="filter-date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2">
-                    <option value="all">Qualquer Data</option>
-                    <option value="today">Hoje</option>
-                    <option value="tomorrow">Amanhã</option>
-                    <option value="overdue">Atrasadas</option>
-                    <option value="none">Sem Data</option>
-                </select>
-                <div class="flex items-center ml-auto">
-                    <span class="mr-3 text-sm font-medium text-gray-900">Mostrar Concluídas</span>
-                    <label class="switch">
-                        <input type="checkbox" id="filter-completed">
-                        <span class="slider"></span>
-                    </label>
-                </div>
+            </main>
+
+            <div id="loading-spinner" class="hidden text-center mt-10">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p class="mt-2 text-gray-600">Carregando...</p>
             </div>
-
-            <div id="task-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
-        </main>
-
-        <!-- Vista de Hábitos -->
-        <main id="habit-view" class="hidden flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
-            <header class="flex justify-between items-center mb-4">
-                <div class="flex items-center gap-4">
-                    <button id="prev-month-btn" class="p-2 rounded-md hover:bg-gray-200"><i class="fas fa-chevron-left"></i></button>
-                    <h2 id="habit-month-year" class="text-3xl font-bold text-gray-900"></h2>
-                    <button id="next-month-btn" class="p-2 rounded-md hover:bg-gray-200"><i class="fas fa-chevron-right"></i></button>
-                </div>
-                <button id="add-habit-btn" class="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition duration-300">+ Adicionar Hábito</button>
-            </header>
-            <div id="habit-tracker" class="bg-white p-4 rounded-lg shadow-sm overflow-x-auto"></div>
-        </main>
-
-        <!-- Vista de Estatísticas -->
-        <main id="stats-view" class="hidden flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
-            <h2 class="text-3xl font-bold text-gray-900 mb-6">Estatísticas</h2>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="bg-white p-4 rounded-lg shadow-sm">
-                    <h3 class="font-bold mb-4">Tarefas Concluídas por Área</h3>
-                    <canvas id="tasks-by-category-chart"></canvas>
-                </div>
-                <div class="bg-white p-4 rounded-lg shadow-sm">
-                    <h3 class="font-bold mb-4">Consistência dos Hábitos (Mês Atual)</h3>
-                    <div id="habits-consistency-chart"></div>
-                </div>
-            </div>
-        </main>
-
-        <div id="loading-spinner" class="hidden text-center mt-10">
-            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p class="mt-2 text-gray-600">Carregando...</p>
         </div>
     </div>
 
@@ -225,8 +260,8 @@
                         <div class="flex items-center gap-2">
                             <button type="button" id="date-btn-today" class="p-2 bg-gray-200 text-gray-700 rounded-md text-sm" title="Hoje"><i class="fas fa-sun"></i></button>
                             <button type="button" id="date-btn-tomorrow" class="p-2 bg-gray-200 text-gray-700 rounded-md text-sm" title="Amanhã"><i class="fas fa-moon"></i></button>
-                            <label for="task-due-date" class="cursor-pointer p-2 bg-gray-200 rounded-md" title="Escolher data"><i class="fas fa-calendar-alt"></i></label>
-                            <input type="date" id="task-due-date" class="w-0 p-0 border-0">
+                            <button type="button" id="date-picker-btn" class="cursor-pointer p-2 bg-gray-200 rounded-md" title="Escolher data"><i class="fas fa-calendar-alt"></i></button>
+                            <input type="date" id="task-due-date" class="hidden">
                             <button type="button" id="repeat-btn" class="p-2 bg-gray-200 rounded-md" title="Definir repetição"><i class="fas fa-redo"></i></button>
                         </div>
                         <div id="date-display" class="text-sm text-gray-600 mt-1 h-5"></div>
@@ -358,9 +393,11 @@
         const taskView = document.getElementById('task-view');
         const habitView = document.getElementById('habit-view');
         const statsView = document.getElementById('stats-view');
+        const settingsView = document.getElementById('settings-view');
         const navTasksBtn = document.getElementById('nav-tasks');
         const navHabitsBtn = document.getElementById('nav-habits');
         const navStatsBtn = document.getElementById('nav-stats');
+        const navSettingsBtn = document.getElementById('nav-settings');
         const habitTracker = document.getElementById('habit-tracker');
         const habitMonthYearEl = document.getElementById('habit-month-year');
         const habitModal = document.getElementById('habit-modal');
@@ -635,7 +672,8 @@
                 closeModal('task-modal');
             } else {
                 saveTaskBtn.textContent = 'Adicionar Outra Tarefa';
-                taskForm.reset();
+                document.getElementById('task-name').value = '';
+                document.getElementById('task-details').value = '';
                 subtasksList.innerHTML = '';
                 tempSubtasks = [];
                 updateDateDisplay(toYYYYMMDD(new Date()));
@@ -708,6 +746,7 @@
             navTasksBtn.addEventListener('click', () => switchView('tasks'));
             navHabitsBtn.addEventListener('click', () => switchView('habits'));
             navStatsBtn.addEventListener('click', () => switchView('stats'));
+            navSettingsBtn.addEventListener('click', () => switchView('settings'));
 
             // Date buttons
             document.getElementById('date-btn-today').addEventListener('click', () => {
@@ -724,6 +763,13 @@
                 taskDueDateInput.value = tomorrowStr;
                 updateDateDisplay(tomorrowStr);
             });
+            document.getElementById('date-picker-btn').addEventListener('click', () => {
+                try {
+                    taskDueDateInput.showPicker();
+                } catch (e) {
+                    console.error("showPicker() not supported or failed.", e);
+                }
+            });
             taskDueDateInput.addEventListener('change', (e) => {
                 tempDueDate = e.target.value;
                 updateDateDisplay(e.target.value);
@@ -739,6 +785,8 @@
                 tempRepeatRule.frequency = document.getElementById('repeat-frequency').value;
                 if (tempRepeatRule.frequency === 'weekly') {
                     tempRepeatRule.days = Array.from(document.querySelectorAll('#weekly-repeat-options button.bg-blue-500')).map(btn => btn.dataset.day);
+                } else {
+                    delete tempRepeatRule.days;
                 }
                 closeModal('repeat-modal');
                 updateDateDisplay(tempDueDate);
@@ -898,6 +946,11 @@
                     renderSubtasksInModal();
                 }
             });
+
+            // Sidebar toggle
+            document.getElementById('toggle-sidebar-btn').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('collapsed');
+            });
         }
 
         // --- Funções de UI restantes ---
@@ -957,7 +1010,7 @@
             categoryList.innerHTML = '';
             const allTasksButton = document.createElement('button');
             allTasksButton.className = `w-full text-left px-3 py-2 rounded-md font-medium flex items-center space-x-3 transition-colors ${activeFilters.category === 'all' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'}`;
-            allTasksButton.innerHTML = `<span>📋</span><span>Todas as Tarefas</span>`;
+            allTasksButton.innerHTML = `<span>📋</span><span class="sidebar-text">Todas as Tarefas</span>`;
             allTasksButton.addEventListener('click', () => {
                 activeFilters.category = 'all';
                 mainTitle.textContent = 'Todas as Tarefas';
@@ -969,7 +1022,7 @@
                 const catElement = document.createElement('button');
                 catElement.className = `w-full text-left px-3 py-2 rounded-md font-medium flex items-center space-x-3 transition-colors ${activeFilters.category === cat.id ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'}`;
                 catElement.dataset.categoryId = cat.id;
-                catElement.innerHTML = `<span>${cat.emoji}</span><span>${cat.name}</span>`;
+                catElement.innerHTML = `<span>${cat.emoji}</span><span class="sidebar-text">${cat.name}</span>`;
                 catElement.addEventListener('click', () => {
                     activeFilters.category = cat.id;
                     mainTitle.textContent = cat.name;
@@ -984,7 +1037,7 @@
             const defaultCategories = [
                 { name: 'Saúde Física', emoji: '🏋🏻‍♂️', order: 0 }, { name: 'Saúde Mental', emoji: '🧘🏻‍♂️', order: 1 },
                 { name: 'Cachorra', emoji: '🦁', order: 2 }, { name: 'Pais', emoji: '👩🏻👨🏻', order: 3 },
-                { name: 'Irmã', emoji: '👩🏼‍🦱', order: 4 }, { name: 'Vó', emoji: '👵🏻', order: 5 },
+                { name: 'Irmã', emoji: '👩🏼‍🦱', order: 4 }, { name: 'Vó', emoji: '👵�', order: 5 },
                 { name: 'Loja', emoji: '🏪', order: 6 }, { name: 'Sítio', emoji: '🏡', order: 7 },
                 { name: 'Casa', emoji: '🏠', order: 8 }, { name: 'Cursos e Estudos', emoji: '👨🏻‍🏫', order: 9 },
                 { name: 'Contribuição/Legado', emoji: '🌎', order: 10 }, { name: 'Relacionamento Amoroso', emoji: '❤️', order: 11 },
@@ -1342,9 +1395,11 @@
             taskView.style.display = 'none';
             habitView.style.display = 'none';
             statsView.style.display = 'none';
+            settingsView.style.display = 'none';
             navTasksBtn.classList.remove('bg-blue-100', 'text-blue-700');
             navHabitsBtn.classList.remove('bg-blue-100', 'text-blue-700');
             navStatsBtn.classList.remove('bg-blue-100', 'text-blue-700');
+            navSettingsBtn.classList.remove('bg-blue-100', 'text-blue-700');
 
             if (view === 'tasks') {
                 taskView.style.display = 'block';
@@ -1356,6 +1411,9 @@
                 statsView.style.display = 'block';
                 navStatsBtn.classList.add('bg-blue-100', 'text-blue-700');
                 renderStatistics();
+            } else if (view === 'settings') {
+                settingsView.style.display = 'block';
+                navSettingsBtn.classList.add('bg-blue-100', 'text-blue-700');
             }
         }
 
@@ -1363,4 +1421,3 @@
     </script>
 </body>
 </html>
-Em desenvolvimento - por @murilokrominski
