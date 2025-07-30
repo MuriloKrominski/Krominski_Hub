@@ -165,7 +165,15 @@
         import { getFirestore, collection, addDoc, doc, onSnapshot, updateDoc, deleteDoc, query, writeBatch, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- CONFIGURAÇÃO E ESTADO INICIAL ---
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "YOUR_API_KEY", authDomain: "YOUR_AUTH_DOMAIN", projectId: "YOUR_PROJECT_ID" };
+        const firebaseConfig = {
+        apiKey: "AIzaSyC59KHuHiOKJa4gmbeCiQWJygqqUkkcdyU",
+        authDomain: "krominski-hub.firebaseapp.com",
+        projectId: "krominski-hub",
+        storageBucket: "krominski-hub.firebasestorage.app",
+        messagingSenderId: "447462209767",
+        appId: "1:447462209767:web:caea1783c6f5fae853ca42",
+        measurementId: "G-FZXEW9F9BG"
+        };
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-task-manager';
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
