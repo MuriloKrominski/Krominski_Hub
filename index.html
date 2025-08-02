@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <!-- Author: Murilo Krominski - https://murilokrominski.github.io/ -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Krominski Hub - Gerenciador de Tarefas</title>
@@ -41,7 +40,6 @@
 </head>
 <body class="bg-gray-100 text-gray-800">
 
-    <!-- Tela de Login -->
     <div id="login-container" class="flex flex-col justify-center items-center h-screen text-center p-4">
         <h1 class="text-4xl font-bold text-gray-800 mb-2">Bem-vindo ao Krominski Hub</h1>
         <p class="text-lg text-gray-600 mb-8">Entre com sua conta do Google para sincronizar suas tarefas em todos os dispositivos.</p>
@@ -54,9 +52,7 @@
         </button>
     </div>
 
-    <!-- Conteúdo Principal do App -->
     <div id="app-container" class="flex h-screen">
-        <!-- Barra Lateral de Navegação e Categorias -->
         <aside id="sidebar" class="bg-white border-r border-gray-200 p-4 flex flex-col w-64">
             <div class="flex items-center mb-6 sidebar-title">
                 <i class="fas fa-rocket text-blue-600 text-2xl"></i>
@@ -78,7 +74,6 @@
         </aside>
 
         <div id="main-content" class="flex-1 flex flex-col">
-            <!-- Vista de Tarefas -->
             <main id="task-view" class="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
                 <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
                     <div>
@@ -132,7 +127,6 @@
                 <div id="task-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
             </main>
 
-            <!-- Vista de Hábitos -->
             <main id="habit-view" class="hidden flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
                 <header class="flex justify-between items-center mb-4">
                     <div class="flex items-center gap-4">
@@ -145,7 +139,6 @@
                 <div id="habit-tracker" class="bg-white p-4 rounded-lg shadow-sm overflow-x-auto"></div>
             </main>
 
-            <!-- Vista de Estatísticas -->
             <main id="stats-view" class="hidden flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
                 <h2 class="text-3xl font-bold text-gray-900 mb-6">Estatísticas</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -160,7 +153,6 @@
                 </div>
             </main>
 
-            <!-- Vista de Configurações -->
             <main id="settings-view" class="hidden flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
                 <h2 class="text-3xl font-bold text-gray-900 mb-6">Configurações</h2>
                 <div class="space-y-6">
@@ -187,7 +179,6 @@
         </div>
     </div>
 
-    <!-- Modals -->
     <div id="habit-modal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
             <h3 id="habit-modal-title" class="text-2xl font-bold mb-4">Novo Hábito</h3>
@@ -240,7 +231,6 @@
                     <input type="url" id="task-link" class="w-full p-2 border border-gray-300 rounded-md" placeholder="https://exemplo.com">
                 </div>
 
-                <!-- Subtarefas -->
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Subtarefas</label>
                     <div id="subtasks-list" class="space-y-2 mb-2"></div>
@@ -307,8 +297,7 @@
                     <option value="yearly">Anualmente</option>
                 </select>
                 <div id="weekly-repeat-options" class="hidden justify-around">
-                    <!-- Weekday buttons will be inserted here -->
-                </div>
+                    </div>
             </div>
             <div class="flex justify-end space-x-3 mt-6">
                 <button type="button" id="cancel-repeat-btn" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Cancelar</button>
@@ -344,13 +333,13 @@
 
         // --- CONFIGURAÇÃO E ESTADO INICIAL ---
         const firebaseConfig = {
-        apiKey: "__FIREBASE_API_KEY__",
-        authDomain: "__FIREBASE_AUTH_DOMAIN__",
-        projectId: "__FIREBASE_PROJECT_ID__",
-        storageBucket: "__FIREBASE_STORAGE_BUCKET__",
-        messagingSenderId: "__FIREBASE_MESSAGING_SENDER_ID__",
-        appId: "__FIREBASE_APP_ID__",
-        measurementId: "__FIREBASE_MEASUREMENT_ID__"
+            apiKey: "__FIREBASE_API_KEY__",
+            authDomain: "__FIREBASE_AUTH_DOMAIN__",
+            projectId: "__FIREBASE_PROJECT_ID__",
+            storageBucket: "__FIREBASE_STORAGE_BUCKET__",
+            messagingSenderId: "__FIREBASE_MESSAGING_SENDER_ID__",
+            appId: "__FIREBASE_APP_ID__",
+            measurementId: "__FIREBASE_MEASUREMENT_ID__"
         };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -440,7 +429,7 @@
             populateCategorySelect();
             renderAreasModal();
             renderHabitTracker();
-            renderStatistics();
+            // Nao chamar renderStatistics aqui para evitar que rode a toda hora, chamar apenas ao mudar de view
         }
 
         function renderTasks() {
@@ -495,12 +484,20 @@
                 const importance = importanceMap[task.importance] || importanceMap['1'];
                 const card = document.createElement('div');
                 const isCompletedVisible = activeFilters.showCompleted && task.completed;
-                card.className = `task-card bg-white rounded-lg shadow-md p-4 flex flex-col justify-between border-l-4 border-${importanceMap[task.importance]?.color?.replace('bg-','')} ${isCompletedVisible ? 'opacity-60' : ''}`;
+                
+                // Tailwind não suporta interpolação de classes, então precisamos definir as cores explicitamente.
+                let borderColor = 'border-gray-400';
+                if(task.importance == 4) borderColor = 'border-red-500';
+                if(task.importance == 3) borderColor = 'border-blue-500';
+                if(task.importance == 2) borderColor = 'border-yellow-500';
+                if(task.importance == 1) borderColor = 'border-black';
+                
+                card.className = `task-card bg-white rounded-lg shadow-md p-4 flex flex-col justify-between border-l-4 ${borderColor} ${isCompletedVisible ? 'opacity-60' : ''}`;
                 
                 let dateInfo = '';
                 if (task.dueDate) {
                     const daysOverdue = getDaysOverdue(task.dueDate, task.overdueResetDate);
-                    const dueDate = new Date(task.dueDate + 'T12:00:00Z');
+                    const dueDate = new Date(task.dueDate.replace(/-/g, '/')); // Use / to avoid timezone issues
                     const formattedDate = new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'short' }).format(dueDate);
                     const isRepeating = task.repeatRule && task.repeatRule.frequency !== 'none';
                     
@@ -539,8 +536,8 @@
                 card.innerHTML = `
                     <div>
                         <div class="flex justify-between items-start">
-                             <span class="text-xs font-semibold ${importanceMap[task.importance]?.color} text-white px-2 py-1 rounded-full">${importance.emoji} ${importance.text}</span>
-                             <span class="force-badge ${importanceMap[task.importance]?.color}">Força: ${task.forca}</span>
+                             <span class="text-xs font-semibold px-2 py-1 rounded-full">${importance.emoji} ${importance.text}</span>
+                             <span class="force-badge ${borderColor.replace('border-','bg-')}">Força: ${task.forca || 0}</span>
                         </div>
                         <h4 class="font-bold text-lg mt-2 mb-1 ${isCompletedVisible ? 'line-through' : ''}">${task.name}</h4>
                         ${task.details ? `<p class="text-sm text-gray-600 mb-2 ${isCompletedVisible ? 'line-through' : ''}">${task.details}</p>` : ''}
@@ -588,7 +585,7 @@
             const catRef = collection(db, `users/${currentUser.uid}/categories`);
             const qCat = query(catRef, orderBy("order"));
             unsubscribeCategories = onSnapshot(qCat, async (snapshot) => {
-                if (snapshot.empty) {
+                if (snapshot.empty && !currentUser.isAnonymous) { // Apenas criar para usuários logados
                     await createDefaultCategories();
                 } else {
                     categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -674,9 +671,11 @@
                 saveTaskBtn.textContent = 'Adicionar Outra Tarefa';
                 document.getElementById('task-name').value = '';
                 document.getElementById('task-details').value = '';
+                document.getElementById('task-link').value = '';
                 subtasksList.innerHTML = '';
                 tempSubtasks = [];
-                updateDateDisplay(toYYYYMMDD(new Date()));
+                // Nao resetar a data, para facilitar adicionar varias tarefas no mesmo dia
+                // updateDateDisplay(toYYYYMMDD(new Date()));
             }
         }
 
@@ -818,7 +817,7 @@
                                 subtasks: updatedSubtasks
                             });
                         } else {
-                            await updateDoc(doc(db, `users/${currentUser.uid}/tasks`, taskId), { completed: true });
+                            await updateDoc(doc(db, `users/${currentUser.uid}/tasks`, taskId), { completed: !task.completed });
                         }
                     } else if (button.classList.contains('edit-btn')) {
                         openModal('task-modal', task);
@@ -1026,7 +1025,7 @@
                 catElement.addEventListener('click', () => {
                     activeFilters.category = cat.id;
                     mainTitle.textContent = cat.name;
-                    renderAll();
+                    renderTasks(); // Render only tasks to avoid re-rendering everything
                 });
                 categoryList.appendChild(catElement);
             });
@@ -1036,8 +1035,8 @@
             const batch = writeBatch(db);
             const defaultCategories = [
                 { name: 'Saúde Física', emoji: '🏋🏻‍♂️', order: 0 }, { name: 'Saúde Mental', emoji: '🧘🏻‍♂️', order: 1 },
-                { name: 'Cachorra', emoji: '🦁', order: 2 }, { name: 'Pais', emoji: '👩🏻👨🏻', order: 3 },
-                { name: 'Irmã', emoji: '👩🏼‍🦱', order: 4 }, { name: 'Vó', emoji: '👵�', order: 5 },
+                { name: 'Cachorra', emoji: '🦁', order: 2 }, { name: 'Pais', emoji: '👩🏻‍🦱👨🏻', order: 3 },
+                { name: 'Irmã', emoji: '👩🏼‍🦱', order: 4 }, { name: 'Vó', emoji: '👵', order: 5 },
                 { name: 'Loja', emoji: '🏪', order: 6 }, { name: 'Sítio', emoji: '🏡', order: 7 },
                 { name: 'Casa', emoji: '🏠', order: 8 }, { name: 'Cursos e Estudos', emoji: '👨🏻‍🏫', order: 9 },
                 { name: 'Contribuição/Legado', emoji: '🌎', order: 10 }, { name: 'Relacionamento Amoroso', emoji: '❤️', order: 11 },
@@ -1138,7 +1137,7 @@
             document.getElementById('restore-confirm-modal').classList.add('hidden');
             if (!currentUser || !restoreFileContent) return;
             try {
-                const wb = XLSX.read(restoreFileContent, { type: 'binary' });
+                const wb = XLSX.read(restoreFileContent, { type: 'binary', cellDates:true });
                 const tasksToRestore = XLSX.utils.sheet_to_json(wb.Sheets["Tarefas"]);
                 const categoriesToRestore = XLSX.utils.sheet_to_json(wb.Sheets["Áreas"]);
                 const habitsToRestore = XLSX.utils.sheet_to_json(wb.Sheets["Hábitos"]);
@@ -1153,20 +1152,23 @@
                 const existingHabits = await getDocs(collection(db, `users/${currentUser.uid}/habits`));
                 existingHabits.forEach(doc => batch.delete(doc.ref));
 
+                await batch.commit(); // Commit deletions first
+
+                const restoreBatch = writeBatch(db);
                 categoriesToRestore.forEach(cat => {
                     const newCatRef = doc(collection(db, `users/${currentUser.uid}/categories`));
-                    batch.set(newCatRef, cat);
+                    restoreBatch.set(newCatRef, cat);
                 });
                 tasksToRestore.forEach(task => {
                     const newTaskRef = doc(collection(db, `users/${currentUser.uid}/tasks`));
-                    batch.set(newTaskRef, task);
+                    restoreBatch.set(newTaskRef, task);
                 });
                 habitsToRestore.forEach(habit => {
                     const newHabitRef = doc(collection(db, `users/${currentUser.uid}/habits`));
-                    batch.set(newHabitRef, habit);
+                    restoreBatch.set(newHabitRef, habit);
                 });
 
-                await batch.commit();
+                await restoreBatch.commit();
             } catch (error) {
                 console.error("Erro ao restaurar backup: ", error);
                 alert("Ocorreu um erro. Verifique se o arquivo de backup é válido.");
@@ -1267,9 +1269,9 @@
         }
         
         function updateDateDisplay(dateStr) {
-            let displayText = "Não repetir";
+            let displayText = "Sem data definida";
             if (dateStr) {
-                const date = new Date(dateStr + 'T12:00:00Z');
+                 const date = new Date(dateStr.replace(/-/g, '/')); // Use / to avoid timezone issues
                 displayText = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric' }).format(date);
             }
             
@@ -1308,14 +1310,14 @@
             }
         }
 
-        function calculateNextDueDate(currentDueDate, rule) {
-            const newDueDate = new Date(currentDueDate + 'T12:00:00Z');
+        function calculateNextDueDate(currentDueDateStr, rule) {
+            const newDueDate = new Date(currentDueDateStr.replace(/-/g, '/')); // Use / to avoid timezone issues
             switch(rule.frequency) {
                 case 'daily': newDueDate.setDate(newDueDate.getDate() + 1); break;
                 case 'weekly':
                     if (rule.days && rule.days.length > 0) {
                         const dayMap = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
-                        const sortedDayIndexes = rule.days.map(d => dayMap[d]).sort();
+                        const sortedDayIndexes = rule.days.map(d => dayMap[d]).sort((a,b) => a - b);
                         let currentDayIndex = newDueDate.getDay();
                         let nextDayIndex = sortedDayIndexes.find(i => i > currentDayIndex);
                         if (nextDayIndex === undefined) {
@@ -1362,7 +1364,7 @@
                     labels: tasksByCategory.map(c => c.name),
                     datasets: [{
                         data: tasksByCategory.map(c => c.count),
-                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6b7280']
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6b7280', '#f97316', '#84cc16', '#0891b2', '#d946ef', '#fde047' ]
                     }]
                 }
             });
@@ -1375,7 +1377,7 @@
             
             habits.forEach(habit => {
                 const completedDays = habit.completed?.[currentMonthKey] || [];
-                const percentage = Math.round((completedDays.length / daysInMonth) * 100);
+                const percentage = daysInMonth > 0 ? Math.round((completedDays.length / daysInMonth) * 100) : 0;
                 const habitStatEl = document.createElement('div');
                 habitStatEl.className = 'mb-4';
                 habitStatEl.innerHTML = `
@@ -1396,17 +1398,17 @@
             habitView.style.display = 'none';
             statsView.style.display = 'none';
             settingsView.style.display = 'none';
-            navTasksBtn.classList.remove('bg-blue-100', 'text-blue-700');
-            navHabitsBtn.classList.remove('bg-blue-100', 'text-blue-700');
-            navStatsBtn.classList.remove('bg-blue-100', 'text-blue-700');
-            navSettingsBtn.classList.remove('bg-blue-100', 'text-blue-700');
-
+            
+            const allNavs = [navTasksBtn, navHabitsBtn, navStatsBtn, navSettingsBtn];
+            allNavs.forEach(btn => btn.classList.remove('bg-blue-100', 'text-blue-700'));
+            
             if (view === 'tasks') {
                 taskView.style.display = 'block';
                 navTasksBtn.classList.add('bg-blue-100', 'text-blue-700');
             } else if (view === 'habits') {
                 habitView.style.display = 'flex';
                 navHabitsBtn.classList.add('bg-blue-100', 'text-blue-700');
+                renderHabitTracker();
             } else if (view === 'stats') {
                 statsView.style.display = 'block';
                 navStatsBtn.classList.add('bg-blue-100', 'text-blue-700');
